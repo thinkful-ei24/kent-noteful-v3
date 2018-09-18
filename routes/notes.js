@@ -11,9 +11,9 @@ router.get('/', (req, res, next) => {
   const { searchTerm } = req.query;
   let filter = {};
   const re = new RegExp(searchTerm, 'gi');
-  console.log(re);
+
   if (searchTerm) {
-    filter.title = { $regex: re };
+    filter = { $or: [ {title: { $regex: re }}, {content: { $regex: re }}]};
   }
 
   return Note
@@ -84,9 +84,10 @@ router.put('/:id', (req, res, next) => {
 
 /* ========== DELETE/REMOVE A SINGLE ITEM ========== */
 router.delete('/:id', (req, res, next) => {
-
-  console.log('Delete a Note');
-  res.status(204).end();
+  const noteId = req.params.id;
+  return Note.findByIdAndRemove(noteId)
+    .then(() => res.sendStatus(204))
+    .catch(err => next(err));
 });
 
 module.exports = router;
