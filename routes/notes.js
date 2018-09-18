@@ -28,10 +28,15 @@ router.get('/', (req, res, next) => {
 
 /* ========== GET/READ A SINGLE ITEM ========== */
 router.get('/:id', (req, res, next) => {
+  const { id } = req.params;
 
-  console.log('Get a Note');
-  res.json({ id: 1, title: 'Temp 1' });
-
+  return Note
+    .findById(id)
+    .then(Note => Note ? res.json(Note) : next())
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({message: 'Internal server error'});
+    });
 });
 
 /* ========== POST/CREATE AN ITEM ========== */
