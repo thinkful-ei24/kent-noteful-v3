@@ -4,16 +4,26 @@ const express = require('express');
 
 const router = express.Router();
 
+const Note = require('../models/note');
+
 /* ========== GET/READ ALL ITEMS ========== */
 router.get('/', (req, res, next) => {
+  const { searchTerm } = req.query;
+  let filter = {};
+  const re = new RegExp(searchTerm, 'gi');
+  console.log(re);
+  if (searchTerm) {
+    filter.title = { $regex: re };
+  }
 
-  console.log('Get All Notes');
-  res.json([
-    { id: 1, title: 'Temp 1' },
-    { id: 2, title: 'Temp 2' },
-    { id: 3, title: 'Temp 3' }
-  ]);
-
+  return Note
+    .find(filter)
+    .sort({ updatedAt: 'desc' })
+    .then(Notes => res.json(Notes))
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({message: 'Internal server error'});
+    });
 });
 
 /* ========== GET/READ A SINGLE ITEM ========== */
