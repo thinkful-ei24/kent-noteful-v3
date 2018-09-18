@@ -19,11 +19,8 @@ router.get('/', (req, res, next) => {
   return Note
     .find(filter)
     .sort({ updatedAt: 'desc' })
-    .then(Notes => res.json(Notes))
-    .catch(err => {
-      console.error(err);
-      res.status(500).json({message: 'Internal server error'});
-    });
+    .then(Notes => Notes ? res.json(Notes) : next())
+    .catch(err => next(err));
 });
 
 /* ========== GET/READ A SINGLE ITEM ========== */
@@ -33,10 +30,7 @@ router.get('/:id', (req, res, next) => {
   return Note
     .findById(id)
     .then(Note => Note ? res.json(Note) : next())
-    .catch(err => {
-      console.error(err);
-      res.status(500).json({message: 'Internal server error'});
-    });
+    .catch(err => next(err));
 });
 
 /* ========== POST/CREATE AN ITEM ========== */
