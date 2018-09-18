@@ -35,9 +35,31 @@ router.get('/:id', (req, res, next) => {
 
 /* ========== POST/CREATE AN ITEM ========== */
 router.post('/', (req, res, next) => {
+  const { title, content } = req.body;
 
-  console.log('Create a Note');
-  res.location('path/to/new/document').status(201).json({ id: 2, title: 'Temp 2' });
+  if (!title) {
+    const err = new Error('Missing `title` in request body');
+    err.status = 400;
+    return next(err);
+  }
+
+  const newNote = { 
+    title, 
+    content
+  };
+  
+  return Note
+    .create(newNote)
+    .then(Note => {
+      if (Note) {
+        res.location(`${req.originalUrl}/${Note.id}`).status(201).json(Note);
+      } else {
+        next();
+      }
+    })
+    .catch(err => next(err));
+
+  // res.location('path/to/new/document').status(201).json({ id: 2, title: 'Temp 2' });
 
 });
 
