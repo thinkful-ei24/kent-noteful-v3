@@ -58,17 +58,28 @@ router.post('/', (req, res, next) => {
       }
     })
     .catch(err => next(err));
-
-  // res.location('path/to/new/document').status(201).json({ id: 2, title: 'Temp 2' });
-
 });
 
 /* ========== PUT/UPDATE A SINGLE ITEM ========== */
 router.put('/:id', (req, res, next) => {
+  const noteId = req.params.id;
+  const { title, content } = req.body;
 
-  console.log('Update a Note');
-  res.json({ id: 1, title: 'Updated Temp 1' });
+  if (!title) {
+    const err = new Error('Missing `title` in request body');
+    err.status = 400;
+    return next(err);
+  }
 
+  const newNote = { 
+    title, 
+    content
+  };
+
+  return Note
+    .findByIdAndUpdate(noteId, newNote, {new: true})
+    .then(Note => Note ? res.json(Note) : next())
+    .catch(err => next(err));
 });
 
 /* ========== DELETE/REMOVE A SINGLE ITEM ========== */
