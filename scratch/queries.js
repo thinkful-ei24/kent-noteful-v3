@@ -82,3 +82,19 @@ mongoose.connect(MONGODB_URI, { useNewUrlParser:true })
         console.error(err);
       });
   });
+
+mongoose.connect(MONGODB_URI, { useNewUrlParser:true })
+  .then(() => {
+    const id = '000000000000000000000007';
+    Note.findByIdAndRemove(id)
+      .then(results => {
+        console.log(results);
+      })
+      .then(() => {
+        return mongoose.disconnect();
+      })
+      .catch(err => {
+        console.error(`ERROR: ${err.message}`);
+        console.error(err);
+      });
+  });
