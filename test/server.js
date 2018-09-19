@@ -63,7 +63,7 @@ describe('Basic Express setup', () => {
 
 describe('Noteful API', function() {
   before(function() {
-    return mongoose.connect(TEST_MONGODB_URI)
+    return mongoose.connect(TEST_MONGODB_URI, { useNewUrlParser: true })
       .then(() => mongoose.connection.db.dropDatabase());
   });
 
@@ -80,6 +80,43 @@ describe('Noteful API', function() {
   });
 
   describe('GET /api/notes', function() {
-    it('should return all notes');
+    it('should return all notes', function() {
+      let res;
+      return chai.request(app)
+        .get('/api/notes')
+        .then(_res => {
+          res = _res;
+          expect(res).to.have.status(200);
+          expect(res).to.be.json;
+          expect(res.body).to.be.an('array');
+          expect(res.body).to.have.length.of.at.least(1);
+          return Note.countDocuments();
+        })
+        .then(count => expect(res.body).to.have.length(count));
+    });
+
+    it('should return correct search results for a valid search term', function() {
+      let res;
+      return chai.request(app)
+        .get('/api/notes?searchTerm=lady%20gaga')
+        .then(_res => {
+          res = _res;
+          expect(res).to.have.status(200);
+          expect(res).to.be.json;
+          expect(res.body).to.be.an('array');
+          expect(res.body).to.have.length.of.at.least(1);
+          return Note
+            .find({
+              $or: [ 
+                {title: { $regex: /lady gaga/gi }}, 
+                {content: { $regex: /lady gaga/gi }}
+              ]
+            });
+        })
+        .then(notes => {
+          expect(res.body[0].title).to.equal(notes[0].title);
+          expect(res.body[0].content).to.equal(notes[0].content);
+        });
+    });
   });
 });
