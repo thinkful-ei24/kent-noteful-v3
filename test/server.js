@@ -152,7 +152,6 @@ describe('Noteful API', function() {
       };
 
       let res;
-      // 1) First, call the API
       return chai.request(app)
         .post('/api/notes')
         .send(newItem)
@@ -163,16 +162,26 @@ describe('Noteful API', function() {
           expect(res).to.be.json;
           expect(res.body).to.be.a('object');
           expect(res.body).to.have.keys('id', 'title', 'content', 'createdAt', 'updatedAt');
-          // 2) then call the database
           return Note.findById(res.body.id);
         })
-        // 3) then compare the API response to the database results
         .then(data => {
           expect(res.body.id).to.equal(data.id);
           expect(res.body.title).to.equal(data.title);
           expect(res.body.content).to.equal(data.content);
           expect(new Date(res.body.createdAt)).to.eql(data.createdAt);
           expect(new Date(res.body.updatedAt)).to.eql(data.updatedAt);
+        });
+    });
+
+    it('should return an error when missing "title" field', function() {
+      const newItem = {
+        'content': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor...'
+      };
+      return chai.request(app)
+        .post('/api/notes')
+        .send(newItem)
+        .then(function (res) {
+          expect(res).to.have.status(400);
         });
     });
   });
