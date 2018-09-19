@@ -114,9 +114,33 @@ describe('Noteful API', function() {
             });
         })
         .then(notes => {
+          expect(res.body[0].id).to.equal(notes[0].id);
           expect(res.body[0].title).to.equal(notes[0].title);
           expect(res.body[0].content).to.equal(notes[0].content);
         });
+    });
+
+    it('should return nothing for invalid search term', function() {
+      let res;
+      return chai.request(app)
+        .get('/api/notes?searchTerm=qwergsdfhgsdfgh')
+        .then(_res => {
+          res = _res;
+          expect(res).to.have.status(200);
+          expect(res).to.be.json;
+          return Note
+            .find({
+              $or: [ 
+                {title: { $regex: /qwergsdfhgsdfgh/gi }}, 
+                {content: { $regex: /qwergsdfhgsdfgh/gi }}
+              ]
+            });
+        })
+        .then(notes => {
+          expect(res.body).to.be.empty;
+          expect(res.body).to.deep.equal(notes);
+        });
+        
     });
   });
 });
