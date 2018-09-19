@@ -1,3 +1,11 @@
 language: node_js
 node_js: node
 services: mongodb
+deploy:
+  provider: heroku
+  api_key:
+    secure: MCAru2DB5pJK2pSrpEvL1wU3mXp70jWdGJB6FlEbyckGGK1Xk2VYYBJm2aqntq/8saMK2cDxQbDzONxL016wbwLBt8fGvnbXiVFafD9ZFQgsCTQzgVUJmkRVHU8Rl4qI2O89fsbmRds/K+LRtjyLCsq6a7DHX3yD5SEDnSbiqb93imvvpJB6zh83l/YZDdzukDEaZYU779n3Ftn4C/49lZoMjSUrEI2KM7BbCF+5NiImgW6zyGwv/1Ok+vZcBi68DFK/WKHjJFIv4j8qASCqX5+d45WZnGZk6qeqCvpD9jE3ZRjN5soWZoOPob3SGGrEC/6rD0plhVCU5flKxh+VPPkq0Y44+CiK/yUCp+KaqQjLRB0wdygc0rJ8TsnZWLNtpxHehrCg0xP+1U98nP+DD3zvigHTWX5MMRYHMoOYhve0N6mnzYEJqjIBMfi7hjfKFULiL5QsQNarbguoOUZJrEejr2psfoD6Fa/cw6jokxANHhn0ik2uT5Qme/ktmHQlHRJhquLIF+6QSZUjBma9Q9uv9jRENSHURwHbSU4cSgWoddDMq6s6Wa+myjb9wuMXXttB1pdW3OCQpgK/23hZeI+iqG/JmloElCgsuXD9bhhPqwVbSuGa8mrF1OdYaKjtjl6FvqSHACni704PCqh71viX+GgZhwebY/BQuG5HT60=
+  app: kent-noteful-v3
+  on:
+    repo: thinkful-ei24/kent-noteful-v3
+    branch: features/mongo-testing
