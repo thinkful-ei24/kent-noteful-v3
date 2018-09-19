@@ -218,4 +218,64 @@ describe('Noteful API', function() {
         });
     });
   });
+
+  describe('PUT /api/notes/:id', function() {
+    it('should update the note', function() {
+      const updateData = {
+        title: 'updated title',
+        content: 'updated content'
+      };
+
+      return Note
+        .findOne()
+        .then(note => {
+          updateData.id = note.id;
+          return chai.request(app)
+            .put(`/api/notes/${note.id}`)
+            .send(updateData);
+        })
+        .then(res => {
+          expect(res).to.have.status(200);
+          return Note.findById(updateData.id);
+        })
+        .then(restaurant => {
+          expect(restaurant.title).to.equal(updateData.title);
+          expect(restaurant.content).to.equal(updateData.content);
+        });
+    });
+
+    it('should return an error when missing "title" field', function() {
+      const updateData = {
+        content: 'updated content'
+      };
+
+      return Note
+        .findOne()
+        .then(note => {
+          updateData.id = note.id;
+          return chai.request(app)
+            .put(`/api/notes/${note.id}`)
+            .send(updateData);
+        })
+        .then(res => {
+          expect(res).to.have.status(404);
+        });
+    });
+  });
+
+  describe('DELETE /api/notes/:id', function() {
+    it('should delete an item by id', function() {
+      let noteId; 
+      return Note
+        .findOne()
+        .then(note => {
+          noteId = note.id;
+          return chai.request(app)
+            .delete(`/api/notes/${noteId}`);
+        })
+        .then(res => {
+          expect(res).to.have.status(204);
+        });
+    });
+  });
 });

@@ -67,7 +67,7 @@ router.put('/:id', (req, res, next) => {
 
   if (!title) {
     const err = new Error('Missing `title` in request body');
-    err.status = 400;
+    err.status = 404;
     return next(err);
   }
 
