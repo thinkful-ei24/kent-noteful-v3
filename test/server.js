@@ -34,23 +34,6 @@ describe('Environment', () => {
 });
 
 describe('Basic Express setup', () => {
-  before(function() {
-    return mongoose.connect(TEST_MONGODB_URI)
-      .then(() => mongoose.connection.db.dropDatabase());
-  });
-
-  beforeEach(function() {
-    return Note.insertMany(notes);
-  });
-
-  afterEach(function() {
-    return mongoose.connection.db.dropDatabase();
-  });
-
-  after(function() {
-    return mongoose.disconnect();
-  });
-
   describe('Express static', () => {
 
     it('GET request "/" should return the index page', () => {
@@ -75,5 +58,28 @@ describe('Basic Express setup', () => {
         });
     });
 
+  });
+});
+
+describe('Noteful API', function() {
+  before(function() {
+    return mongoose.connect(TEST_MONGODB_URI)
+      .then(() => mongoose.connection.db.dropDatabase());
+  });
+
+  beforeEach(function() {
+    return Note.insertMany(notes);
+  });
+
+  afterEach(function() {
+    return mongoose.connection.db.dropDatabase();
+  });
+
+  after(function() {
+    return mongoose.disconnect();
+  });
+
+  describe('GET /api/notes', function() {
+    it('should return all notes');
   });
 });
