@@ -104,12 +104,18 @@ describe('Noteful API', function() {
   
   describe('DELETE /api/folders/:id', function() {
     it('should delete a folder by ID', function() {
+      let id;
       return Folder.findOne()
         .then(folder => {
-          return chai.request(app).delete(`/api/folders/${folder.id}`);
+          id = folder.id;
+          return chai.request(app).delete(`/api/folders/${id}`);
         })
         .then(res => {
           expect(res).to.have.status(204);
+          return Folder.findById(id);
+        })
+        .then(data => {
+          expect(data).to.be.null;
         });
     });
   });
