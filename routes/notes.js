@@ -3,15 +3,20 @@
 const express = require('express');
 const router = express.Router();
 const Note = require('../models/note');
+const mongoose = require('mongoose');
 
 /* ========== GET/READ ALL ITEMS ========== */
 router.get('/', (req, res, next) => {
-  const { searchTerm } = req.query;
+  const { searchTerm, folderId} = req.query;
   let filter = {};
   const re = new RegExp(searchTerm, 'gi');
 
   if (searchTerm) {
     filter = { $or: [ {title: { $regex: re }}, {content: { $regex: re }}]};
+  }
+
+  if (folderId) {
+    filter.folderId = folderId;
   }
 
   return Note
@@ -25,6 +30,13 @@ router.get('/', (req, res, next) => {
 router.get('/:id', (req, res, next) => {
   const { id } = req.params;
 
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    const err = new Error('Invalid ID');
+    err.status = 404;
+    return next(err);
+  }
+
   return Note
     .findById(id)
     .then(Note => Note ? res.json(Note) : next())
@@ -33,7 +45,7 @@ router.get('/:id', (req, res, next) => {
 
 /* ========== POST/CREATE AN ITEM ========== */
 router.post('/', (req, res, next) => {
-  const { title, content } = req.body;
+  const { title, content, folderId } = req.body;
 
   if (!title) {
     const err = new Error('Missing `title` in request body');
@@ -41,9 +53,16 @@ router.post('/', (req, res, next) => {
     return next(err);
   }
 
+  if (folderId && !mongoose.Types.ObjectId.isValid(folderId)) {
+    const err = new Error('Invalid Folder ID');
+    err.status = 404;
+    return next(err);
+  }
+
   const newNote = { 
     title, 
-    content
+    content,
+    folderId
   };
   
   return Note
@@ -61,7 +80,7 @@ router.post('/', (req, res, next) => {
 /* ========== PUT/UPDATE A SINGLE ITEM ========== */
 router.put('/:id', (req, res, next) => {
   const noteId = req.params.id;
-  const { title, content } = req.body;
+  const { title, content, folderId } = req.body;
 
   if (!title) {
     const err = new Error('Missing `title` in request body');
@@ -69,9 +88,22 @@ router.put('/:id', (req, res, next) => {
     return next(err);
   }
 
+  if (!mongoose.Types.ObjectId.isValid(noteId)) {
+    const err = new Error('Invalid ID');
+    err.status = 404;
+    return next(err);
+  }
+
+  if (folderId && !mongoose.Types.ObjectId.isValid(folderId)) {
+    const err = new Error('Invalid Folder ID');
+    err.status = 404;
+    return next(err);
+  }
+
   const newNote = { 
     title, 
-    content
+    content,
+    folderId
   };
 
   return Note

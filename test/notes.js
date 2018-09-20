@@ -7,6 +7,8 @@ const app = require('../server');
 const { TEST_MONGODB_URI } = require('../config');
 const Note = require('../models/note');
 const { notes } = require('../db/seed/notes');
+const Folder = require('../models/folder');
+const { folders } = require('../db/seed/folders');
 const expect = chai.expect;
 chai.use(chaiHttp);
 
@@ -17,7 +19,11 @@ describe('Noteful API', function() {
   });
 
   beforeEach(function() {
-    return Note.insertMany(notes);
+    return Promise.all([
+      Note.insertMany(notes),
+      Folder.insertMany(folders),
+      Folder.createIndexes()
+    ]);
   });
 
   afterEach(function() {

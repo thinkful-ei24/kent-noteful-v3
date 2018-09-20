@@ -13,7 +13,7 @@ mongoose.connect(MONGODB_URI, { useNewUrlParser:true })
     return Promise.all([
       Note.insertMany(notes),
       Folder.insertMany(folders),
-      Folder.createIndexes
+      Folder.createIndexes()
     ]);
   })
   .then(() => mongoose.disconnect())
