@@ -45,7 +45,7 @@ const Note = require('../models/note');
 // mongoose.connect(MONGODB_URI, { useNewUrlParser:true })
 //   .then(() => {
 //     const newNote = {
-//       title: 'New Note', 
+//       title: 'New Note',
 //       content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam rhoncus, mi a pharetra gravida, elit lectus blandit nibh, non venenatis velit felis in enim. Etiam non sodales sem. Nunc quis arcu eget quam tincidunt gravida. Vestibulum laoreet sem ut dignissim malesuada. Aenean congue posuere justo laoreet pretium. Cras sem ligula, sollicitudin non magna non, dictum aliquam neque. Etiam luctus maximus quam, ut efficitur ex. Phasellus eu turpis ornare, varius felis vel, eleifend lacus. Proin scelerisque ligula et nunc cursus lacinia. Phasellus placerat diam et feugiat fringilla.'
 //     };
 
@@ -66,7 +66,7 @@ const Note = require('../models/note');
 //   .then(() => {
 //     const id = '5ba14cff6052215ccf7f4e3f';
 //     const updatedNote = {
-//       title: 'Updated Note', 
+//       title: 'Updated Note',
 //       content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam rhoncus, mi a pharetra gravida, elit lectus blandit nibh, non venenatis velit felis in enim. Etiam non sodales sem. Nunc quis arcu eget quam tincidunt gravida. Vestibulum laoreet sem ut dignissim malesuada. Aenean congue posuere justo laoreet pretium. Cras sem ligula, sollicitudin non magna non, dictum aliquam neque. Etiam luctus maximus quam, ut efficitur ex. Phasellus eu turpis ornare, varius felis vel, eleifend lacus. Proin scelerisque ligula et nunc cursus lacinia. Phasellus placerat diam et feugiat fringilla.'
 //     };
 
