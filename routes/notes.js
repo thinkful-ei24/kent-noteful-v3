@@ -117,7 +117,7 @@ router.put('/:id', (req, res, next) => {
     return next(err);
   }
 
-  if (tags.length) {
+  if (tags) {
     tags.forEach(tag => {
       if (!mongoose.Types.ObjectId.isValid(tag)) {
         const err = new Error('Invalid Tag ID');
@@ -131,7 +131,7 @@ router.put('/:id', (req, res, next) => {
     title,
     content,
     folderId,
-    tags: tags.length ? tags : []
+    tags: tags ? tags : []
   };
 
   return Note
