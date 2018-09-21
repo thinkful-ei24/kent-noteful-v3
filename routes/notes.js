@@ -7,20 +7,25 @@ const mongoose = require('mongoose');
 
 /* ========== GET/READ ALL ITEMS ========== */
 router.get('/', (req, res, next) => {
-  const { searchTerm, folderId} = req.query;
+  const { searchTerm, folderId, tagId } = req.query;
   let filter = {};
-  const re = new RegExp(searchTerm, 'gi');
 
   if (searchTerm) {
-    filter = { $or: [{title: { $regex: re }}, {content: { $regex: re }}]};
+    const re = new RegExp(searchTerm, 'gi');
+    filter.$or = [{title: { $regex: re }}, {content: { $regex: re }}];
   }
 
   if (folderId) {
     filter.folderId = folderId;
   }
 
+  if (tagId) {
+    filter.tags = tagId;
+  }
+
   return Note
     .find(filter)
+    .populate('tags')
     .sort({ updatedAt: 'desc' })
     .then(Notes => Notes ? res.json(Notes) : next())
     .catch(err => next(err));
@@ -39,13 +44,14 @@ router.get('/:id', (req, res, next) => {
 
   return Note
     .findById(id)
+    .populate('tags')
     .then(Note => Note ? res.json(Note) : next())
     .catch(err => next(err));
 });
 
 /* ========== POST/CREATE AN ITEM ========== */
 router.post('/', (req, res, next) => {
-  const { title, content, folderId } = req.body;
+  const { title, content, folderId, tags } = req.body;
 
   if (!title) {
     const err = new Error('Missing `title` in request body');
@@ -59,10 +65,19 @@ router.post('/', (req, res, next) => {
     return next(err);
   }
 
+  tags.forEach(tag => {
+    if (!mongoose.Types.ObjectId.isValid(tag)) {
+      const err = new Error('Invalid Tag ID');
+      err.status = 404;
+      return next(err);
+    }
+  });
+
   const newNote = {
     title,
     content,
-    folderId
+    folderId,
+    tags
   };
 
   return Note
@@ -80,7 +95,7 @@ router.post('/', (req, res, next) => {
 /* ========== PUT/UPDATE A SINGLE ITEM ========== */
 router.put('/:id', (req, res, next) => {
   const noteId = req.params.id;
-  const { title, content, folderId } = req.body;
+  const { title, content, folderId, tags } = req.body;
 
   if (!title) {
     const err = new Error('Missing `title` in request body');
@@ -100,10 +115,19 @@ router.put('/:id', (req, res, next) => {
     return next(err);
   }
 
+  tags.forEach(tag => {
+    if (!mongoose.Types.ObjectId.isValid(tag)) {
+      const err = new Error('Invalid Tag ID');
+      err.status = 404;
+      return next(err);
+    }
+  });
+
   const newNote = {
     title,
     content,
-    folderId
+    folderId,
+    tags
   };
 
   return Note
