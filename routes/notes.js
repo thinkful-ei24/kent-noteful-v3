@@ -65,19 +65,21 @@ router.post('/', (req, res, next) => {
     return next(err);
   }
 
-  tags.forEach(tag => {
-    if (!mongoose.Types.ObjectId.isValid(tag)) {
-      const err = new Error('Invalid Tag ID');
-      err.status = 404;
-      return next(err);
-    }
-  });
+  if (tags) {
+    tags.forEach(tag => {
+      if (!mongoose.Types.ObjectId.isValid(tag)) {
+        const err = new Error('Invalid Tag ID');
+        err.status = 404;
+        return next(err);
+      }
+    });
+  }
 
   const newNote = {
     title,
     content,
     folderId,
-    tags
+    tags: tags ? tags : []
   };
 
   return Note
@@ -115,19 +117,21 @@ router.put('/:id', (req, res, next) => {
     return next(err);
   }
 
-  tags.forEach(tag => {
-    if (!mongoose.Types.ObjectId.isValid(tag)) {
-      const err = new Error('Invalid Tag ID');
-      err.status = 404;
-      return next(err);
-    }
-  });
+  if (tags.length) {
+    tags.forEach(tag => {
+      if (!mongoose.Types.ObjectId.isValid(tag)) {
+        const err = new Error('Invalid Tag ID');
+        err.status = 404;
+        return next(err);
+      }
+    });
+  }
 
   const newNote = {
     title,
     content,
     folderId,
-    tags
+    tags: tags.length ? tags : []
   };
 
   return Note

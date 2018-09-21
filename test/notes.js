@@ -62,8 +62,8 @@ describe('Noteful API', function() {
           expect(res.body).to.have.length.of.at.least(1);
           return Note
             .find({
-              $or: [ 
-                {title: { $regex: /lady gaga/gi }}, 
+              $or: [
+                {title: { $regex: /lady gaga/gi }},
                 {content: { $regex: /lady gaga/gi }}
               ]
             });
@@ -85,8 +85,8 @@ describe('Noteful API', function() {
           expect(res).to.be.json;
           return Note
             .find({
-              $or: [ 
-                {title: { $regex: /qwergsdfhgsdfgh/gi }}, 
+              $or: [
+                {title: { $regex: /qwergsdfhgsdfgh/gi }},
                 {content: { $regex: /qwergsdfhgsdfgh/gi }}
               ]
             });
@@ -95,7 +95,7 @@ describe('Noteful API', function() {
           expect(res.body).to.be.empty;
           expect(res.body).to.deep.equal(notes);
         });
-        
+
     });
   });
 
@@ -135,8 +135,10 @@ describe('Noteful API', function() {
   describe('POST /api/notes', function() {
     it('should create and return a new item when provided valid data', function() {
       const newItem = {
-        'title': 'The best article about cats ever!',
-        'content': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor...'
+        title: 'The best article about cats ever!',
+        content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor...',
+        folderId: '111111111111111111111102',
+        tags: ['222222222222222222222201', '222222222222222222222202']
       };
 
       let res;
@@ -149,7 +151,7 @@ describe('Noteful API', function() {
           expect(res).to.have.header('location');
           expect(res).to.be.json;
           expect(res.body).to.be.a('object');
-          expect(res.body).to.have.keys('id', 'title', 'content', 'createdAt', 'updatedAt');
+          expect(res.body).to.have.keys('id', 'title', 'content', 'createdAt', 'updatedAt', 'folderId', 'tags');
           return Note.findById(res.body.id);
         })
         .then(data => {
@@ -177,8 +179,10 @@ describe('Noteful API', function() {
   describe('PUT /api/notes/:id', function() {
     it('should update the note', function() {
       const updateData = {
-        title: 'updated title',
-        content: 'updated content'
+        title: 'The best article about cats ever!',
+        content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor...',
+        folderId: '111111111111111111111102',
+        tags: ['222222222222222222222201', '222222222222222222222202']
       };
 
       return Note
@@ -220,7 +224,7 @@ describe('Noteful API', function() {
 
   describe('DELETE /api/notes/:id', function() {
     it('should delete an item by id', function() {
-      let noteId; 
+      let noteId;
       return Note
         .findOne()
         .then(note => {
