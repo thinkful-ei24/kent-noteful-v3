@@ -59,12 +59,12 @@ router.post('/', (req, res, next) => {
     return next(err);
   }
 
-  const newNote = { 
-    title, 
+  const newNote = {
+    title,
     content,
     folderId
   };
-  
+
   return Note
     .create(newNote)
     .then(Note => {
@@ -100,8 +100,8 @@ router.put('/:id', (req, res, next) => {
     return next(err);
   }
 
-  const newNote = { 
-    title, 
+  const newNote = {
+    title,
     content,
     folderId
   };
