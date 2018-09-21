@@ -1,7 +1,7 @@
 /* global $ */
 'use strict';
 
-const api = (function () {
+const api = (function() {
   const search = function(path, query) {
     return $.ajax({
       type: 'GET',

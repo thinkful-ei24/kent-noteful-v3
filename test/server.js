@@ -32,7 +32,7 @@ describe('Basic Express setup', () => {
     it('GET request "/" should return the index page', () => {
       return chai.request(app)
         .get('/')
-        .then(function (res) {
+        .then(function(res) {
           expect(res).to.exist;
           expect(res).to.have.status(200);
           expect(res).to.be.html;

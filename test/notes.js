@@ -99,8 +99,8 @@ describe('Noteful API', function() {
     });
   });
 
-  describe('GET /api/notes/:id', function () {
-    it('should return correct note', function () {
+  describe('GET /api/notes/:id', function() {
+    it('should return correct note', function() {
       let data;
       return Note.findOne()
         .then(_data => {
@@ -123,7 +123,7 @@ describe('Noteful API', function() {
     });
 
 
-    it('should should return error for incorrect note', function () {
+    it('should should return error for incorrect note', function() {
       return chai.request(app).get('/api/notes/DOESNOTEXIST')
         .then((res) => {
           expect(res).to.have.status(404);
@@ -132,8 +132,8 @@ describe('Noteful API', function() {
     });
   });
 
-  describe('POST /api/notes', function () {
-    it('should create and return a new item when provided valid data', function () {
+  describe('POST /api/notes', function() {
+    it('should create and return a new item when provided valid data', function() {
       const newItem = {
         'title': 'The best article about cats ever!',
         'content': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor...'
@@ -143,7 +143,7 @@ describe('Noteful API', function() {
       return chai.request(app)
         .post('/api/notes')
         .send(newItem)
-        .then(function (_res) {
+        .then(function(_res) {
           res = _res;
           expect(res).to.have.status(201);
           expect(res).to.have.header('location');
@@ -168,7 +168,7 @@ describe('Noteful API', function() {
       return chai.request(app)
         .post('/api/notes')
         .send(newItem)
-        .then(function (res) {
+        .then(function(res) {
           expect(res).to.have.status(400);
         });
     });

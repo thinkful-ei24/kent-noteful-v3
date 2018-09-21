@@ -12,7 +12,7 @@ router.get('/', (req, res, next) => {
   const re = new RegExp(searchTerm, 'gi');
 
   if (searchTerm) {
-    filter = { $or: [ {title: { $regex: re }}, {content: { $regex: re }}]};
+    filter = { $or: [{title: { $regex: re }}, {content: { $regex: re }}]};
   }
 
   if (folderId) {
