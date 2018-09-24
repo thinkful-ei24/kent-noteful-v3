@@ -11,14 +11,17 @@ const expect = chai.expect;
 chai.use(chaiHttp);
 
 
-describe('Noteful API', function() {
+describe.only('Noteful API', function() {
   before(function() {
     return mongoose.connect(TEST_MONGODB_URI, { useNewUrlParser: true })
       .then(() => mongoose.connection.db.dropDatabase());
   });
 
   beforeEach(function() {
-    return Folder.insertMany(folders);
+    return Promise.all([
+      Folder.insertMany(folders),
+      Folder.createIndexes()
+    ]);
   });
 
   afterEach(function() {
@@ -30,7 +33,7 @@ describe('Noteful API', function() {
   });
 
   describe('GET /api/folders', function() {
-    it('should get all folders', function() {
+    it('should return the correct number of folders', function() {
       return Promise.all([
         Folder.find(),
         chai.request(app).get('/api/folders')
@@ -40,6 +43,27 @@ describe('Noteful API', function() {
           expect(res).to.be.json;
           expect(res.body).to.be.an('array');
           expect(res.body).to.have.length(data.length);
+        });
+    });
+
+    it('should return a list with the correct fields and values', function() {
+      return Promise.all([
+        Folder.find().sort('name'),
+        chai.request(app).get('/api/folders')
+      ])
+        .then(([data, res]) => {
+          expect(res).to.have.status(200);
+          expect(res).to.be.json;
+          expect(res.body).to.be.an('array');
+          expect(res.body).to.have.length(data.length);
+          res.body.forEach(function(item, i) {
+            expect(item).to.be.an('object');
+            expect(item).to.have.all.keys('id', 'name', 'createdAt', 'updatedAt');
+            expect(item.id).to.equal(data[i].id);
+            expect(item.name).to.equal(data[i].name);
+            expect(new Date(item.createdAt)).to.eql(data[i].createdAt);
+            expect(new Date(item.updatedAt)).to.eql(data[i].updatedAt);
+          });
         });
     });
   });

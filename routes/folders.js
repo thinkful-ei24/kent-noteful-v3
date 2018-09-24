@@ -9,8 +9,7 @@ const Folder = require('../models/folder');
 router.get('/', (req, res, next) => {
   return Folder.find()
     .sort({ name: 1 })
-    .then(folders => folders ? res.json(folders) : next())
-    .catch(err => next(err));
+    .then(folders => res.json(folders));
 });
 
 /* ========== GET/READ A SINGLE ITEM ========== */
@@ -20,7 +19,7 @@ router.get('/:id', (req, res, next) => {
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     const err = new Error('Invalid ID');
-    err.status = 404;
+    err.status = 400;
     return next(err);
   }
 
@@ -42,6 +41,7 @@ router.post('/', (req, res, next) => {
   return Folder.create(newFolder)
     .then(folder => {
       if (folder) {
+        console.log(folder);
         res.location(`${req.originalUrl}/${folder.id}`).status(201).json(folder);
       } else {
         next();
@@ -68,7 +68,7 @@ router.put('/:id', (req, res, next) => {
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     const err = new Error('Invalid ID');
-    err.status = 404;
+    err.status = 400;
     return next(err);
   }
 
@@ -87,12 +87,6 @@ router.put('/:id', (req, res, next) => {
 /* ========== DELETE/REMOVE A SINGLE ITEM ========== */
 router.delete('/:id', (req, res, next) => {
   const { id } = req.params;
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    const err = new Error('Invalid ID');
-    err.status = 404;
-    return next(err);
-  }
 
   return Folder.findOneAndRemove({_id: id})
     .then(() => res.sendStatus(204))
