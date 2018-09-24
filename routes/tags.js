@@ -90,12 +90,6 @@ router.put('/:id', (req, res, next) => {
 router.delete('/:id', (req, res, next) => {
   const {id} = req.params;
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    const err = new Error('Invalid ID');
-    err.status = 404;
-    return next(err);
-  }
-
   return Tag.findOneAndRemove({_id: id})
     .then(() => {
       return Note.updateMany({tags: id}, {$pull: {tags: id}}, {new: true});
