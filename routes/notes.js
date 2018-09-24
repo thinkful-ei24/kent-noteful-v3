@@ -7,12 +7,12 @@ const mongoose = require('mongoose');
 
 /* ========== GET/READ ALL ITEMS ========== */
 router.get('/', (req, res, next) => {
-  const { searchTerm, folderId, tagId } = req.query;
+  const {searchTerm, folderId, tagId} = req.query;
   let filter = {};
 
   if (searchTerm) {
     const re = new RegExp(searchTerm, 'gi');
-    filter.$or = [{title: { $regex: re }}, {content: { $regex: re }}];
+    filter.$or = [{title: {$regex: re}}, {content: {$regex: re}}];
   }
 
   if (folderId) {
@@ -26,19 +26,19 @@ router.get('/', (req, res, next) => {
   return Note
     .find(filter)
     .populate('tags')
-    .sort({ updatedAt: 'desc' })
+    .sort({updatedAt: 'desc'})
     .then(Notes => Notes ? res.json(Notes) : next())
     .catch(err => next(err));
 });
 
 /* ========== GET/READ A SINGLE ITEM ========== */
 router.get('/:id', (req, res, next) => {
-  const { id } = req.params;
+  const {id} = req.params;
 
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     const err = new Error('Invalid ID');
-    err.status = 404;
+    err.status = 400;
     return next(err);
   }
 
@@ -51,7 +51,7 @@ router.get('/:id', (req, res, next) => {
 
 /* ========== POST/CREATE AN ITEM ========== */
 router.post('/', (req, res, next) => {
-  const { title, content, folderId, tags = [] } = req.body;
+  const {title, content, folderId, tags = []} = req.body;
 
   if (!title) {
     const err = new Error('Missing `title` in request body');
@@ -61,7 +61,7 @@ router.post('/', (req, res, next) => {
 
   if (folderId && !mongoose.Types.ObjectId.isValid(folderId)) {
     const err = new Error('Invalid Folder ID');
-    err.status = 404;
+    err.status = 400;
     return next(err);
   }
 
@@ -69,7 +69,7 @@ router.post('/', (req, res, next) => {
     tags.forEach(tag => {
       if (!mongoose.Types.ObjectId.isValid(tag)) {
         const err = new Error('Invalid Tag ID');
-        err.status = 404;
+        err.status = 400;
         return next(err);
       }
     });
@@ -81,6 +81,10 @@ router.post('/', (req, res, next) => {
     folderId,
     tags
   };
+
+  if (newNote.folderId === '') {
+    delete newNote.folderId;
+  }
 
   return Note
     .create(newNote)
@@ -95,49 +99,61 @@ router.post('/', (req, res, next) => {
 });
 
 /* ========== PUT/UPDATE A SINGLE ITEM ========== */
-router.put('/:id', (req, res, next) => {
-  const noteId = req.params.id;
-  const { title, content, folderId, tags } = req.body;
+router.put('/:id', (req, res, next) => {  const {id} = req.params;
 
-  if (!title) {
-    const err = new Error('Missing `title` in request body');
-    err.status = 404;
-    return next(err);
-  }
+  const toUpdate = {};
+  const updateableFields = ['title', 'content', 'folderId', 'tags'];
 
-  if (!mongoose.Types.ObjectId.isValid(noteId)) {
+  updateableFields.forEach(field => {
+    if (field in req.body) {
+      toUpdate[field] = req.body[field];
+    }
+  });
+
+  /***** Never trust users - validate input *****/
+  if (!mongoose.Types.ObjectId.isValid(id)) {
     const err = new Error('Invalid ID');
-    err.status = 404;
+    err.status = 400;
     return next(err);
   }
 
-  if (folderId && !mongoose.Types.ObjectId.isValid(folderId)) {
+  if (toUpdate.title === '') {
+    const err = new Error('Missing `title` in request body');
+    err.status = 400;
+    return next(err);
+  }
+
+  if (toUpdate.folderId && !mongoose.Types.ObjectId.isValid(toUpdate.folderId)) {
     const err = new Error('Invalid Folder ID');
-    err.status = 404;
+    err.status = 400;
     return next(err);
   }
 
-  if (tags) {
-    tags.forEach(tag => {
-      if (!mongoose.Types.ObjectId.isValid(tag)) {
-        const err = new Error('Invalid Tag ID');
-        err.status = 404;
-        return next(err);
-      }
-    });
+  if (toUpdate.tags) {
+    const badIds = toUpdate.tags.filter((tag) => !mongoose.Types.ObjectId.isValid(tag));
+    if (badIds.length) {
+      const err = new Error('Invalid Tag ID');
+      err.status = 400;
+      return next(err);
+    }
   }
 
-  const newNote = {
-    title,
-    content,
-    folderId,
-    tags: tags ? tags : []
-  };
+  if (toUpdate.folderId === '') {
+    delete toUpdate.folderId;
+    toUpdate.$unset = {folderId : 1};
+  }
 
-  return Note
-    .findByIdAndUpdate(noteId, newNote, {new: true})
-    .then(Note => Note ? res.json(Note) : next())
-    .catch(err => next(err));
+  Note.findByIdAndUpdate(id, toUpdate, {new: true})
+    .then(result => {
+      if (result) {
+        res.json(result);
+      } else {
+        next();
+      }
+    })
+    .catch(err => {
+      next(err);
+    });
 });
 
 /* ========== DELETE/REMOVE A SINGLE ITEM ========== */
