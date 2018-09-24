@@ -51,7 +51,7 @@ router.get('/:id', (req, res, next) => {
 
 /* ========== POST/CREATE AN ITEM ========== */
 router.post('/', (req, res, next) => {
-  const { title, content, folderId, tags } = req.body;
+  const { title, content, folderId, tags = [] } = req.body;
 
   if (!title) {
     const err = new Error('Missing `title` in request body');
@@ -79,7 +79,7 @@ router.post('/', (req, res, next) => {
     title,
     content,
     folderId,
-    tags: tags ? tags : []
+    tags
   };
 
   return Note
