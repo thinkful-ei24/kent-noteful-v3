@@ -6,15 +6,15 @@ const router = express.Router();
 const Folder = require('../models/folder');
 
 /* ========== GET/READ ALL ITEMS ========== */
-router.get('/', (req, res, next) => {
+router.get('/', (req, res) => {
   return Folder.find()
-    .sort({ name: 1 })
+    .sort({name: 1})
     .then(folders => res.json(folders));
 });
 
 /* ========== GET/READ A SINGLE ITEM ========== */
 router.get('/:id', (req, res, next) => {
-  const { id } = req.params;
+  const {id} = req.params;
 
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -30,18 +30,17 @@ router.get('/:id', (req, res, next) => {
 
 /* ========== POST/CREATE AN ITEM ========== */
 router.post('/', (req, res, next) => {
-  const { name } = req.body;
+  const {name} = req.body;
   if (!(name)) {
     const err = new Error('Missing `name` in request body');
     err.status = 400;
     return next(err);
   }
 
-  const newFolder = { name };
+  const newFolder = {name};
   return Folder.create(newFolder)
     .then(folder => {
       if (folder) {
-        console.log(folder);
         res.location(`${req.originalUrl}/${folder.id}`).status(201).json(folder);
       } else {
         next();
@@ -58,8 +57,8 @@ router.post('/', (req, res, next) => {
 
 /* ========== PUT/UPDATE A SINGLE ITEM ========== */
 router.put('/:id', (req, res, next) => {
-  const { name } = req.body;
-  const { id } = req.params;
+  const {name} = req.body;
+  const {id} = req.params;
   if (!(name)) {
     const err = new Error('Missing `name` in request body');
     err.status = 400;
@@ -72,7 +71,7 @@ router.put('/:id', (req, res, next) => {
     return next(err);
   }
 
-  const updateData = { name };
+  const updateData = {name};
   return Folder.findOneAndUpdate({_id: id}, updateData, {new: true})
     .then(folder => folder ? res.json(folder) : next())
     .catch(err => {
@@ -86,7 +85,7 @@ router.put('/:id', (req, res, next) => {
 
 /* ========== DELETE/REMOVE A SINGLE ITEM ========== */
 router.delete('/:id', (req, res, next) => {
-  const { id } = req.params;
+  const {id} = req.params;
 
   return Folder.findOneAndRemove({_id: id})
     .then(() => res.sendStatus(204))
