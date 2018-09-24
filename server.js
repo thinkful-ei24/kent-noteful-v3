@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 'use strict';
 
 const express = require('express');
@@ -44,6 +45,7 @@ app.use((req, res, next) => {
 });
 
 // Custom Error Handler
+// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   if (err.status) {
     const errBody = Object.assign({}, err, { message: err.message });
