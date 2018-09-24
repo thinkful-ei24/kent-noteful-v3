@@ -9,19 +9,19 @@ const mongoose = require('mongoose');
 /* ========== GET/READ ALL ITEMS ========== */
 router.get('/', (req, res, next) => {
   return Tag.find()
-    .sort({ name: 1 })
+    .sort({name: 1})
     .then(tags => tags ? res.json(tags) : next())
     .catch(err => next(err));
 });
 
 /* ========== GET/READ A SINGLE ITEM ========== */
 router.get('/:id', (req, res, next) => {
-  const { id } = req.params;
+  const {id} = req.params;
 
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     const err = new Error('Invalid ID');
-    err.status = 404;
+    err.status = 400;
     return next(err);
   }
 
@@ -32,14 +32,14 @@ router.get('/:id', (req, res, next) => {
 
 /* ========== POST/CREATE AN ITEM ========== */
 router.post('/', (req, res, next) => {
-  const { name } = req.body;
+  const {name} = req.body;
   if (!(name)) {
     const err = new Error('Missing `name` in request body');
     err.status = 400;
     return next(err);
   }
 
-  const newTag = { name };
+  const newTag = {name};
   return Tag.create(newTag)
     .then(tag => {
       if (tag) {
@@ -59,8 +59,8 @@ router.post('/', (req, res, next) => {
 
 /* ========== PUT/UPDATE A SINGLE ITEM ========== */
 router.put('/:id', (req, res, next) => {
-  const { name } = req.body;
-  const { id } = req.params;
+  const {name} = req.body;
+  const {id} = req.params;
 
   if (!name) {
     const err = new Error('Missing `name` in request body');
@@ -70,11 +70,11 @@ router.put('/:id', (req, res, next) => {
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     const err = new Error('Invalid ID');
-    err.status = 404;
+    err.status = 400;
     return next(err);
   }
 
-  const updateData = { name };
+  const updateData = {name};
   return Tag.findOneAndUpdate({_id: id}, updateData, {new: true})
     .then(tag => tag ? res.json(tag) : next())
     .catch(err => {
@@ -88,7 +88,7 @@ router.put('/:id', (req, res, next) => {
 
 /* ========== DELETE/REMOVE A SINGLE ITEM ========== */
 router.delete('/:id', (req, res, next) => {
-  const { id } = req.params;
+  const {id} = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     const err = new Error('Invalid ID');
