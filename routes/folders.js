@@ -4,6 +4,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
 const Folder = require('../models/folder');
+const passport = require('passport');
+
+router.use('/', passport.authenticate('jwt', { session: false, failWithError: true }));
 
 /* ========== GET/READ ALL ITEMS ========== */
 router.get('/', (req, res) => {
