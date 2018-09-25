@@ -7,12 +7,12 @@ const mongoose = require('mongoose');
 
 /* ========== GET/READ ALL ITEMS ========== */
 router.get('/', (req, res, next) => {
-  const {searchTerm, folderId, tagId} = req.query;
+  const { searchTerm, folderId, tagId } = req.query;
   let filter = {};
 
   if (searchTerm) {
     const re = new RegExp(searchTerm, 'gi');
-    filter.$or = [{title: {$regex: re}}, {content: {$regex: re}}];
+    filter.$or = [{ title: { $regex: re } }, { content: { $regex: re } }];
   }
 
   if (folderId) {
@@ -26,14 +26,14 @@ router.get('/', (req, res, next) => {
   return Note
     .find(filter)
     .populate('tags')
-    .sort({updatedAt: 'desc'})
+    .sort({ updatedAt: 'desc' })
     .then(Notes => Notes ? res.json(Notes) : next())
     .catch(err => next(err));
 });
 
 /* ========== GET/READ A SINGLE ITEM ========== */
 router.get('/:id', (req, res, next) => {
-  const {id} = req.params;
+  const { id } = req.params;
 
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -51,7 +51,7 @@ router.get('/:id', (req, res, next) => {
 
 /* ========== POST/CREATE AN ITEM ========== */
 router.post('/', (req, res, next) => {
-  const {title, content, folderId, tags = []} = req.body;
+  const { title, content, folderId, tags = [] } = req.body;
 
   if (!title) {
     const err = new Error('Missing `title` in request body');
@@ -99,7 +99,7 @@ router.post('/', (req, res, next) => {
 });
 
 /* ========== PUT/UPDATE A SINGLE ITEM ========== */
-router.put('/:id', (req, res, next) => {  const {id} = req.params;
+router.put('/:id', (req, res, next) => {  const { id } = req.params;
 
   const toUpdate = {};
   const updateableFields = ['title', 'content', 'folderId', 'tags'];
@@ -140,10 +140,10 @@ router.put('/:id', (req, res, next) => {  const {id} = req.params;
 
   if (toUpdate.folderId === '') {
     delete toUpdate.folderId;
-    toUpdate.$unset = {folderId : 1};
+    toUpdate.$unset = { folderId : 1 };
   }
 
-  Note.findByIdAndUpdate(id, toUpdate, {new: true})
+  Note.findByIdAndUpdate(id, toUpdate, { new: true })
     .then(result => {
       if (result) {
         res.json(result);

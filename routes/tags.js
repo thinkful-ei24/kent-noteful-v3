@@ -9,14 +9,14 @@ const mongoose = require('mongoose');
 /* ========== GET/READ ALL ITEMS ========== */
 router.get('/', (req, res, next) => {
   return Tag.find()
-    .sort({name: 1})
+    .sort({ name: 1 })
     .then(tags => tags ? res.json(tags) : next())
     .catch(err => next(err));
 });
 
 /* ========== GET/READ A SINGLE ITEM ========== */
 router.get('/:id', (req, res, next) => {
-  const {id} = req.params;
+  const { id } = req.params;
 
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -25,21 +25,21 @@ router.get('/:id', (req, res, next) => {
     return next(err);
   }
 
-  return Tag.findOne({_id: id})
+  return Tag.findOne({ _id: id })
     .then(tag => tag ? res.json(tag) : next())
     .catch(err => next(err));
 });
 
 /* ========== POST/CREATE AN ITEM ========== */
 router.post('/', (req, res, next) => {
-  const {name} = req.body;
+  const { name } = req.body;
   if (!(name)) {
     const err = new Error('Missing `name` in request body');
     err.status = 400;
     return next(err);
   }
 
-  const newTag = {name};
+  const newTag = { name };
   return Tag.create(newTag)
     .then(tag => {
       if (tag) {
@@ -59,8 +59,8 @@ router.post('/', (req, res, next) => {
 
 /* ========== PUT/UPDATE A SINGLE ITEM ========== */
 router.put('/:id', (req, res, next) => {
-  const {name} = req.body;
-  const {id} = req.params;
+  const { name } = req.body;
+  const { id } = req.params;
 
   if (!name) {
     const err = new Error('Missing `name` in request body');
@@ -74,8 +74,8 @@ router.put('/:id', (req, res, next) => {
     return next(err);
   }
 
-  const updateData = {name};
-  return Tag.findOneAndUpdate({_id: id}, updateData, {new: true})
+  const updateData = { name };
+  return Tag.findOneAndUpdate({ _id: id }, updateData, { new: true })
     .then(tag => tag ? res.json(tag) : next())
     .catch(err => {
       if (err.code === 11000) {
@@ -88,11 +88,11 @@ router.put('/:id', (req, res, next) => {
 
 /* ========== DELETE/REMOVE A SINGLE ITEM ========== */
 router.delete('/:id', (req, res, next) => {
-  const {id} = req.params;
+  const { id } = req.params;
 
-  return Tag.findOneAndRemove({_id: id})
+  return Tag.findOneAndRemove({ _id: id })
     .then(() => {
-      return Note.updateMany({tags: id}, {$pull: {tags: id}}, {new: true});
+      return Note.updateMany({ tags: id }, { $pull: { tags: id } }, { new: true });
     })
     .then(() => res.sendStatus(204))
     .catch(err => next(err));
