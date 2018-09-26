@@ -14,11 +14,11 @@ passport.use(jwtStrategy);
 
 const { PORT, MONGODB_URI } = require('./config');
 
-const notesRouter = require('./routes/notes');
-const foldersRouter = require('./routes/folders');
-const tagsRouter = require('./routes/tags');
-const usersRouter = require('./routes/users');
-const authRouter = require('./routes/auth');
+const notesRouter = require('./routes/notes.router');
+const foldersRouter = require('./routes/folders.router');
+const tagsRouter = require('./routes/tags.router');
+const usersRouter = require('./routes/users.router');
+const authRouter = require('./routes/auth.router');
 
 // Create an Express application
 const app = express();

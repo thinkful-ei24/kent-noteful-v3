@@ -4,19 +4,19 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const mongoose = require('mongoose');
 const app = require('../server');
-const {TEST_MONGODB_URI} = require('../config');
+const { TEST_MONGODB_URI } = require('../config');
 const Note = require('../models/note');
-const {notes} = require('../db/seed/notes');
+const { notes } = require('../db/seed/notes');
 const Folder = require('../models/folder');
-const {folders} = require('../db/seed/folders');
+const { folders } = require('../db/seed/folders');
 const Tag = require('../models/tag');
-const {tags} = require('../db/seed/tags');
+const { tags } = require('../db/seed/tags');
 const expect = chai.expect;
 chai.use(chaiHttp);
 
 describe('Noteful API', function() {
   before(function() {
-    return mongoose.connect(TEST_MONGODB_URI, {useNewUrlParser: true})
+    return mongoose.connect(TEST_MONGODB_URI, { useNewUrlParser: true })
       .then(() => mongoose.connection.db.dropDatabase());
   });
 
@@ -56,7 +56,7 @@ describe('Noteful API', function() {
 
     it('should return a list sorted desc with the correct right fields', function() {
       return Promise.all([
-        Note.find().sort({updatedAt: 'desc'}),
+        Note.find().sort({ updatedAt: 'desc' }),
         chai.request(app).get('/api/notes')
       ])
         .then(([data, res]) => {
@@ -81,8 +81,8 @@ describe('Noteful API', function() {
 
       const re = new RegExp(searchTerm, 'i');
       const dbPromise = Note
-        .find({$or: [{title: re}, {content: re}]})
-        .sort({updatedAt: 'desc'});
+        .find({ $or: [{ title: re }, { content: re }] })
+        .sort({ updatedAt: 'desc' });
 
       const apiPromise = chai.request(app)
         .get(`/api/notes?searchTerm=${searchTerm}`);
@@ -111,7 +111,7 @@ describe('Noteful API', function() {
         .then((_data) => {
           data = _data;
           return Promise.all([
-            Note.find({folderId: data.id}),
+            Note.find({ folderId: data.id }),
             chai.request(app).get(`/api/notes?folderId=${data.id}`)
           ]);
         })
@@ -130,7 +130,7 @@ describe('Noteful API', function() {
         .then((_data) => {
           data = _data;
           return Promise.all([
-            Note.find({tags: data.id}),
+            Note.find({ tags: data.id }),
             chai.request(app).get(`/api/notes?tagId=${data.id}`)
           ]);
         })
@@ -146,8 +146,8 @@ describe('Noteful API', function() {
       const searchTerm = 'NOT-A-VALID-QUERY';
       const re = new RegExp(searchTerm, 'i');
       const dbPromise = Note.find({
-        $or: [{title: re}, {content: re}]
-      }).sort({updatedAt: 'desc'});
+        $or: [{ title: re }, { content: re }]
+      }).sort({ updatedAt: 'desc' });
       const apiPromise = chai.request(app).get(`/api/notes?searchTerm=${searchTerm}`);
       return Promise.all([dbPromise, apiPromise])
         .then(([data, res]) => {
@@ -243,7 +243,7 @@ describe('Noteful API', function() {
           expect(res).to.be.json;
           expect(res.body).to.be.a('object');
           expect(res.body).to.have.all.keys('id', 'title', 'createdAt', 'updatedAt', 'tags');
-          return Note.findOne({_id: res.body.id});
+          return Note.findOne({ _id: res.body.id });
         })
         .then(data => {
           expect(res.body.id).to.equal(data.id);
@@ -270,7 +270,7 @@ describe('Noteful API', function() {
           expect(res).to.be.json;
           expect(res.body).to.be.a('object');
           expect(res.body).to.include.keys('id', 'title', 'createdAt', 'updatedAt', 'tags');
-          return Note.findOne({_id: res.body.id});
+          return Note.findOne({ _id: res.body.id });
         })
         .then(data => {
           expect(res.body.id).to.equal(data.id);
@@ -297,7 +297,7 @@ describe('Noteful API', function() {
     });
 
     it('should return an error when "title" is empty string', function() {
-      const newItem = {title: ''};
+      const newItem = { title: '' };
       return chai.request(app)
         .post('/api/notes')
         .send(newItem)
@@ -486,7 +486,7 @@ describe('Noteful API', function() {
     });
 
     it('should return an error when "title" is an empty string', function() {
-      const updateItem = {title: ''};
+      const updateItem = { title: '' };
       let data;
       return Note.findOne()
         .then(_data => {

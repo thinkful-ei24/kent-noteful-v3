@@ -4,15 +4,15 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const mongoose = require('mongoose');
 const app = require('../server');
-const {TEST_MONGODB_URI} = require('../config');
+const { TEST_MONGODB_URI } = require('../config');
 const Tag = require('../models/tag');
-const {tags} = require('../db/seed/tags');
+const { tags } = require('../db/seed/tags');
 const expect = chai.expect;
 chai.use(chaiHttp);
 
 describe('Tags API', function() {
   before(function() {
-    return mongoose.connect(TEST_MONGODB_URI, {useNewUrlParser: true})
+    return mongoose.connect(TEST_MONGODB_URI, { useNewUrlParser: true })
       .then(() => mongoose.connection.db.dropDatabase());
   });
 
@@ -107,7 +107,7 @@ describe('Tags API', function() {
 
   describe('POST /api/tags', function() {
     it('should create a new tag', function() {
-      const newTag = {name: 'new'};
+      const newTag = { name: 'new' };
       let res;
       return chai.request(app).post('/api/tags').send(newTag)
         .then(_res => {
@@ -141,7 +141,7 @@ describe('Tags API', function() {
     it('should return an error when given a duplicate name', function() {
       return Tag.findOne()
         .then(data => {
-          const newTag = {'name': data.name};
+          const newTag = { 'name': data.name };
           return chai.request(app).post('/api/tags').send(newTag);
         })
         .then(res => {
@@ -155,7 +155,7 @@ describe('Tags API', function() {
 
   describe('PUT /api/tags/:id', function() {
     it('should update a tag by ID', function() {
-      const updateTag = {name: 'update'};
+      const updateTag = { name: 'update' };
       let data;
       return Tag.findOne()
         .then(_data => {
@@ -175,7 +175,7 @@ describe('Tags API', function() {
     });
 
     it('should respond with a 400 for an invalid id', function() {
-      const updateTag = {name: 'update'};
+      const updateTag = { name: 'update' };
       return chai.request(app)
         .put('/api/tags/INVALID-ID')
         .send(updateTag)
@@ -186,7 +186,7 @@ describe('Tags API', function() {
     });
 
     it('should respond with a 404 for an id that does not exist', function() {
-      const updateTag = {name: 'update'};
+      const updateTag = { name: 'update' };
       return chai.request(app)
         .put('/api/tags/DOESNOTEXIST')
         .send(updateTag)

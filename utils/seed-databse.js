@@ -8,7 +8,7 @@ const Note = require('../models/note');
 
 const { users } = require('../db/seed/users');
 const { tags } = require('../db/seed/tags');
-const { folders } = require('../db/seed/folders');
+const { folders } = require('../db/seed/folder');
 const { notes } = require('../db/seed/notes');
 
 mongoose.connect(MONGODB_URI, { useNewUrlParser:true })
@@ -25,5 +25,5 @@ mongoose.connect(MONGODB_URI, { useNewUrlParser:true })
   })
   .then(() => mongoose.disconnect())
   .catch(err => {
-    console.error(err);
+    console.error(err);// eslint-disable-line no-console
   });
