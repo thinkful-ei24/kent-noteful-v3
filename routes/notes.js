@@ -10,6 +10,7 @@ router.use('/', passport.authenticate('jwt', { session: false, failWithError: tr
 /* ========== GET/READ ALL ITEMS ========== */
 router.get('/', (req, res, next) => {
   const { searchTerm, folderId, tagId } = req.query;
+  const userId = req.user.id;
   let filter = {};
 
   if (searchTerm) {
@@ -25,6 +26,10 @@ router.get('/', (req, res, next) => {
     filter.tags = tagId;
   }
 
+  if (userId) {
+    filter.userId = userId;
+  }
+
   return Note
     .find(filter)
     .populate('tags')
@@ -36,6 +41,7 @@ router.get('/', (req, res, next) => {
 /* ========== GET/READ A SINGLE ITEM ========== */
 router.get('/:id', (req, res, next) => {
   const { id } = req.params;
+  const userId = req.user.id;
 
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -45,7 +51,7 @@ router.get('/:id', (req, res, next) => {
   }
 
   return Note
-    .findById(id)
+    .findOne({ _id: id, userId })
     .populate('tags')
     .then(Note => Note ? res.json(Note) : next())
     .catch(err => next(err));
@@ -54,6 +60,7 @@ router.get('/:id', (req, res, next) => {
 /* ========== POST/CREATE AN ITEM ========== */
 router.post('/', (req, res, next) => {
   const { title, content, folderId, tags = [] } = req.body;
+  const userId = req.user.id;
 
   if (!title) {
     const err = new Error('Missing `title` in request body');
@@ -81,7 +88,8 @@ router.post('/', (req, res, next) => {
     title,
     content,
     folderId,
-    tags
+    tags,
+    userId
   };
 
   if (newNote.folderId === '') {
@@ -102,9 +110,9 @@ router.post('/', (req, res, next) => {
 
 /* ========== PUT/UPDATE A SINGLE ITEM ========== */
 router.put('/:id', (req, res, next) => {  const { id } = req.params;
-
   const toUpdate = {};
   const updateableFields = ['title', 'content', 'folderId', 'tags'];
+  const userId = req.user.id;
 
   updateableFields.forEach(field => {
     if (field in req.body) {
@@ -145,7 +153,7 @@ router.put('/:id', (req, res, next) => {  const { id } = req.params;
     toUpdate.$unset = { folderId : 1 };
   }
 
-  Note.findByIdAndUpdate(id, toUpdate, { new: true })
+  Note.findOneAndUpdate({ _id: id, userId }, toUpdate, { new: true })
     .then(result => {
       if (result) {
         res.json(result);
@@ -160,8 +168,9 @@ router.put('/:id', (req, res, next) => {  const { id } = req.params;
 
 /* ========== DELETE/REMOVE A SINGLE ITEM ========== */
 router.delete('/:id', (req, res, next) => {
+  const userId = req.user.id;
   const noteId = req.params.id;
-  return Note.findByIdAndRemove(noteId)
+  return Note.findOneAndRemove({ _id: noteId, userId })
     .then(() => res.sendStatus(204))
     .catch(err => next(err));
 });

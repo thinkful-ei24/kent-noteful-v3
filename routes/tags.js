@@ -11,7 +11,8 @@ router.use('/', passport.authenticate('jwt', { session: false, failWithError: tr
 
 /* ========== GET/READ ALL ITEMS ========== */
 router.get('/', (req, res, next) => {
-  return Tag.find()
+  const userId = req.user.id;
+  return Tag.find({ userId })
     .sort({ name: 1 })
     .then(tags => tags ? res.json(tags) : next())
     .catch(err => next(err));
@@ -19,6 +20,7 @@ router.get('/', (req, res, next) => {
 
 /* ========== GET/READ A SINGLE ITEM ========== */
 router.get('/:id', (req, res, next) => {
+  const userId = req.user.id;
   const { id } = req.params;
 
 
@@ -28,13 +30,14 @@ router.get('/:id', (req, res, next) => {
     return next(err);
   }
 
-  return Tag.findOne({ _id: id })
+  return Tag.findOne({ _id: id, userId })
     .then(tag => tag ? res.json(tag) : next())
     .catch(err => next(err));
 });
 
 /* ========== POST/CREATE AN ITEM ========== */
 router.post('/', (req, res, next) => {
+  const userId = req.user.id;
   const { name } = req.body;
   if (!(name)) {
     const err = new Error('Missing `name` in request body');
@@ -42,7 +45,7 @@ router.post('/', (req, res, next) => {
     return next(err);
   }
 
-  const newTag = { name };
+  const newTag = { name, userId };
   return Tag.create(newTag)
     .then(tag => {
       if (tag) {
@@ -62,6 +65,7 @@ router.post('/', (req, res, next) => {
 
 /* ========== PUT/UPDATE A SINGLE ITEM ========== */
 router.put('/:id', (req, res, next) => {
+  const userId = req.user.id;
   const { name } = req.body;
   const { id } = req.params;
 
@@ -78,7 +82,7 @@ router.put('/:id', (req, res, next) => {
   }
 
   const updateData = { name };
-  return Tag.findOneAndUpdate({ _id: id }, updateData, { new: true })
+  return Tag.findOneAndUpdate({ _id: id, userId }, updateData, { new: true })
     .then(tag => tag ? res.json(tag) : next())
     .catch(err => {
       if (err.code === 11000) {
@@ -91,9 +95,10 @@ router.put('/:id', (req, res, next) => {
 
 /* ========== DELETE/REMOVE A SINGLE ITEM ========== */
 router.delete('/:id', (req, res, next) => {
+  const userId = req.user.id;
   const { id } = req.params;
 
-  return Tag.findOneAndRemove({ _id: id })
+  return Tag.findOneAndRemove({ _id: id, userId })
     .then(() => {
       return Note.updateMany({ tags: id }, { $pull: { tags: id } }, { new: true });
     })

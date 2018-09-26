@@ -23,7 +23,7 @@ const folders = [
 
   {
     _id: '222222222222222222222202',
-    name: 'Archives',
+    name: 'Archive',
     userId: '000000000000000000000002'
   },
   {
@@ -33,7 +33,7 @@ const folders = [
   },
   {
     _id: '222222222222222222222206',
-    name: 'Personals',
+    name: 'Personal',
     userId: '000000000000000000000002'
   },
   {

@@ -10,7 +10,8 @@ router.use('/', passport.authenticate('jwt', { session: false, failWithError: tr
 
 /* ========== GET/READ ALL ITEMS ========== */
 router.get('/', (req, res) => {
-  return Folder.find()
+  const userId = req.user.id;
+  return Folder.find({ userId })
     .sort({ name: 1 })
     .then(folders => res.json(folders));
 });
@@ -18,7 +19,7 @@ router.get('/', (req, res) => {
 /* ========== GET/READ A SINGLE ITEM ========== */
 router.get('/:id', (req, res, next) => {
   const { id } = req.params;
-
+  const userId = req.user.id;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     const err = new Error('Invalid ID');
@@ -26,7 +27,7 @@ router.get('/:id', (req, res, next) => {
     return next(err);
   }
 
-  return Folder.findOne({ _id: id })
+  return Folder.findOne({ _id: id, userId })
     .then(folder => folder ? res.json(folder) : next())
     .catch(err => next(err));
 });
@@ -34,13 +35,15 @@ router.get('/:id', (req, res, next) => {
 /* ========== POST/CREATE AN ITEM ========== */
 router.post('/', (req, res, next) => {
   const { name } = req.body;
+  const userId = req.user.id;
+
   if (!(name)) {
     const err = new Error('Missing `name` in request body');
     err.status = 400;
     return next(err);
   }
 
-  const newFolder = { name };
+  const newFolder = { name, userId };
   return Folder.create(newFolder)
     .then(folder => {
       if (folder) {
@@ -62,6 +65,8 @@ router.post('/', (req, res, next) => {
 router.put('/:id', (req, res, next) => {
   const { name } = req.body;
   const { id } = req.params;
+  const userId = req.user.id;
+
   if (!(name)) {
     const err = new Error('Missing `name` in request body');
     err.status = 400;
@@ -74,7 +79,7 @@ router.put('/:id', (req, res, next) => {
     return next(err);
   }
 
-  const updateData = { name };
+  const updateData = { name, userId };
   return Folder.findOneAndUpdate({ _id: id }, updateData, { new: true })
     .then(folder => folder ? res.json(folder) : next())
     .catch(err => {
@@ -88,9 +93,10 @@ router.put('/:id', (req, res, next) => {
 
 /* ========== DELETE/REMOVE A SINGLE ITEM ========== */
 router.delete('/:id', (req, res, next) => {
+  const userId = req.user.id;
   const { id } = req.params;
 
-  return Folder.findOneAndRemove({ _id: id })
+  return Folder.findOneAndRemove({ _id: id, userId })
     .then(() => res.sendStatus(204))
     .catch(err => next(err));
 });
