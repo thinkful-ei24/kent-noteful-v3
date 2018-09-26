@@ -42,12 +42,6 @@ const createNewNote = function(req, res, next) {
   const { title, content, folderId, tags = [] } = req.body;
   const userId = req.user.id;
 
-  if (!title) {
-    const err = new Error('Missing `title` in request body');
-    err.status = 400;
-    return next(err);
-  }
-
   if (folderId && !mongoose.Types.ObjectId.isValid(folderId)) {
     const err = new Error('Invalid Folder ID');
     err.status = 400;
@@ -120,12 +114,6 @@ const updateNoteById = function(req, res, next) {
       toUpdate[field] = req.body[field];
     }
   });
-
-  if (toUpdate.title === '') {
-    const err = new Error('Missing `title` in request body');
-    err.status = 400;
-    return next(err);
-  }
 
   if (toUpdate.folderId && !mongoose.Types.ObjectId.isValid(toUpdate.folderId)) {
     const err = new Error('Invalid Folder ID');

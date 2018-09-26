@@ -22,14 +22,8 @@ const getTagById = function(req, res, next) {
 const createNewTag = function(req, res, next) {
   const { name } = req.body;
   const userId = req.user.id;
-
-  if (!(name)) {
-    const err = new Error('Missing `name` in request body');
-    err.status = 400;
-    return next(err);
-  }
-
   const newTag = { name, userId };
+
   return Tag.create(newTag)
     .then(tag => {
       if (tag) {
@@ -50,12 +44,6 @@ const updateTagById = function(req, res, next) {
   const { name } = req.body;
   const { id } = req.params;
   const userId = req.user.id;
-
-  if (!(name)) {
-    const err = new Error('Missing `name` in request body');
-    err.status = 400;
-    return next(err);
-  }
 
   const updateData = { name, userId };
   return Tag.findOneAndUpdate({ _id: id }, updateData, { new: true })
