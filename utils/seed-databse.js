@@ -8,7 +8,7 @@ const Note = require('../models/note');
 
 const { users } = require('../db/seed/users');
 const { tags } = require('../db/seed/tags');
-const { folders } = require('../db/seed/folder');
+const { folders } = require('../db/seed/folders');
 const { notes } = require('../db/seed/notes');
 
 mongoose.connect(MONGODB_URI, { useNewUrlParser:true })
