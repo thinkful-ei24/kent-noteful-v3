@@ -152,7 +152,7 @@ describe.only('Noteful API - Users', function() {
           });
       });
       it('Should reject users with password greater than 72 characters', function() {
-        const longPassword = password.repeat(15);
+        const longPassword = password.padEnd(73, 'a');
         const testUser = { username, password: longPassword, fullname };
         return chai.request(app).post('/api/users').send(testUser)
           .then(res => {
