@@ -4,16 +4,16 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const mongoose = require('mongoose');
 const app = require('../server');
-const {TEST_MONGODB_URI} = require('../config');
+const { TEST_MONGODB_URI } = require('../config');
 const Folder = require('../models/folder');
-const {folders} = require('../db/seed/folders');
+const { folders } = require('../db/seed/folders');
 const expect = chai.expect;
 chai.use(chaiHttp);
 
 
 describe('Noteful API', function() {
   before(function() {
-    return mongoose.connect(TEST_MONGODB_URI, {useNewUrlParser: true})
+    return mongoose.connect(TEST_MONGODB_URI, { useNewUrlParser: true })
       .then(() => mongoose.connection.db.dropDatabase());
   });
 
@@ -108,7 +108,7 @@ describe('Noteful API', function() {
 
   describe('POST /api/folders', function() {
     it('should create a new folder', function() {
-      const newFolder = {name: 'new'};
+      const newFolder = { name: 'new' };
       let res;
       return chai.request(app).post('/api/folders').send(newFolder)
         .then(_res => {
@@ -142,7 +142,7 @@ describe('Noteful API', function() {
     it('should return an error when given a duplicate name', function() {
       return Folder.findOne()
         .then(data => {
-          const newFolder = {'name': data.name};
+          const newFolder = { 'name': data.name };
           return chai.request(app).post('/api/folders').send(newFolder);
         })
         .then(res => {
@@ -156,7 +156,7 @@ describe('Noteful API', function() {
 
   describe('PUT /api/folders/:id', function() {
     it('should update a folder by ID', function() {
-      const updateFolder = {name: 'update'};
+      const updateFolder = { name: 'update' };
       let data;
       return Folder.findOne()
         .then(_data => {
@@ -176,7 +176,7 @@ describe('Noteful API', function() {
     });
 
     it('should respond with a 400 for an invalid id', function() {
-      const updateFolder = {name: 'update'};
+      const updateFolder = { name: 'update' };
       return chai.request(app)
         .put('/api/folders/INVALID-ID')
         .send(updateFolder)
@@ -187,7 +187,7 @@ describe('Noteful API', function() {
     });
 
     it('should respond with a 404 for an id that does not exist', function() {
-      const updateFolder = {name: 'update'};
+      const updateFolder = { name: 'update' };
       return chai.request(app)
         .put('/api/folders/DOESNOTEXIST')
         .send(updateFolder)

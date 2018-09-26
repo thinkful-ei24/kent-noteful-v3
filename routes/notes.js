@@ -3,6 +3,8 @@
 const express = require('express');
 const router = express.Router();
 const Note = require('../models/note');
+const Folder = require('../models/folder');
+const Tag = require('../models/tag');
 const mongoose = require('mongoose');
 const passport = require('passport');
 
@@ -74,6 +76,17 @@ router.post('/', (req, res, next) => {
     return next(err);
   }
 
+  if (folderId) {
+    Folder.findOne({ _id: folderId, userId })
+      .then(folder => {
+        if (!folder) {
+          const err = new Error('This is not your folder');
+          err.status = 400;
+          return next(err);
+        }
+      });
+  }
+
   if (tags) {
     tags.forEach(tag => {
       if (!mongoose.Types.ObjectId.isValid(tag)) {
@@ -81,6 +94,15 @@ router.post('/', (req, res, next) => {
         err.status = 400;
         return next(err);
       }
+
+      Tag.findOne({ _id: tag, userId })
+        .then(tag => {
+          if (!tag) {
+            const err = new Error('This is not your tag');
+            err.status = 400;
+            return next(err);
+          }
+        });
     });
   }
 
@@ -113,6 +135,7 @@ router.put('/:id', (req, res, next) => {  const { id } = req.params;
   const toUpdate = {};
   const updateableFields = ['title', 'content', 'folderId', 'tags'];
   const userId = req.user.id;
+  const folderId = req.body.folderId;
 
   updateableFields.forEach(field => {
     if (field in req.body) {
@@ -139,10 +162,32 @@ router.put('/:id', (req, res, next) => {  const { id } = req.params;
     return next(err);
   }
 
+  if (folderId) {
+    Folder.findOne({ _id: folderId, userId })
+      .then(folder => {
+        if (!folder) {
+          const err = new Error('This is not your folder');
+          err.status = 400;
+          return next(err);
+        }
+      });
+  }
+
   if (toUpdate.tags) {
     const badIds = toUpdate.tags.filter((tag) => !mongoose.Types.ObjectId.isValid(tag));
+
     if (badIds.length) {
       const err = new Error('Invalid Tag ID');
+      err.status = 400;
+      return next(err);
+    }
+
+    const otherIds = toUpdate.tags.filter((tag) => {
+      return !Tag.findOne({ _id: tag, userId });
+    });
+
+    if (otherIds.length) {
+      const err = new Error('This is not your tag');
       err.status = 400;
       return next(err);
     }
