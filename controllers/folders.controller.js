@@ -1,6 +1,5 @@
 'use strict';
 
-const mongoose = require('mongoose');
 const Folder = require('../models/folder');
 
 const getAllFolders = function(req, res, next) {
