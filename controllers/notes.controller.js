@@ -15,17 +15,9 @@ const getAllNotes = function(req, res, next) {
     filter.$or = [{ title: { $regex: re } }, { content: { $regex: re } }];
   }
 
-  if (folderId) {
-    filter.folderId = folderId;
-  }
-
-  if (tagId) {
-    filter.tags = tagId;
-  }
-
-  if (userId) {
-    filter.userId = userId;
-  }
+  if (folderId) filter.folderId = folderId;
+  if (tagId) filter.tags = tagId;
+  if (userId) filter.userId = userId;
 
   return Note
     .find(filter)
@@ -38,12 +30,6 @@ const getAllNotes = function(req, res, next) {
 const getNoteById = function(req, res, next) {
   const { id } = req.params;
   const userId = req.user.id;
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    const err = new Error('Invalid ID');
-    err.status = 400;
-    return next(err);
-  }
 
   return Note
     .findOne({ _id: id, userId })
@@ -134,13 +120,6 @@ const updateNoteById = function(req, res, next) {
       toUpdate[field] = req.body[field];
     }
   });
-
-  /***** Never trust users - validate input *****/
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    const err = new Error('Invalid ID');
-    err.status = 400;
-    return next(err);
-  }
 
   if (toUpdate.title === '') {
     const err = new Error('Missing `title` in request body');

@@ -15,12 +15,6 @@ const getFolderById = function(req, res, next) {
   const { id } = req.params;
   const userId = req.user.id;
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    const err = new Error('Invalid ID');
-    err.status = 400;
-    return next(err);
-  }
-
   return Folder.findOne({ _id: id, userId })
     .then(folder => folder ? res.json(folder) : next())
     .catch(err => next(err));
@@ -60,12 +54,6 @@ const updateFolderById = function(req, res, next) {
 
   if (!(name)) {
     const err = new Error('Missing `name` in request body');
-    err.status = 400;
-    return next(err);
-  }
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    const err = new Error('Invalid ID');
     err.status = 400;
     return next(err);
   }

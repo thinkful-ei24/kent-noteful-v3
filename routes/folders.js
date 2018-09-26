@@ -3,6 +3,7 @@
 const express = require('express');
 const passport = require('passport');
 const FoldersController = require('../controllers/folders.controller');
+const validateId = require('../modules/validateId').validateId;
 
 const router = express.Router();
 
@@ -13,8 +14,8 @@ router.route('/')
   .post(FoldersController.createNewFolder);
 
 router.route('/:id')
-  .get(FoldersController.getFolderById)
-  .put(FoldersController.updateFolderById)
-  .delete(FoldersController.deleteFolderById);
+  .get(validateId, FoldersController.getFolderById)
+  .put(validateId, FoldersController.updateFolderById)
+  .delete(validateId, FoldersController.deleteFolderById);
 
 module.exports = router;

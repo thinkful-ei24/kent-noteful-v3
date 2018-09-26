@@ -3,6 +3,7 @@
 const express = require('express');
 const passport = require('passport');
 const TagsController = require('../controllers/tags.controller');
+const validateId = require('../modules/validateId').validateId;
 
 const router = express.Router();
 
@@ -13,8 +14,8 @@ router.route('/')
   .post(TagsController.createNewTag);
 
 router.route('/:id')
-  .get(TagsController.getTagById)
-  .put(TagsController.updateTagById)
-  .delete(TagsController.deleteTagById);
+  .get(validateId, TagsController.getTagById)
+  .put(validateId, TagsController.updateTagById)
+  .delete(validateId, TagsController.deleteTagById);
 
 module.exports = router;

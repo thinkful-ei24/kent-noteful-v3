@@ -1,6 +1,5 @@
 'use strict';
 
-const mongoose = require('mongoose');
 const Tag = require('../models/tag');
 
 const getAllTags = function(req, res, next) {
@@ -14,12 +13,6 @@ const getAllTags = function(req, res, next) {
 const getTagById = function(req, res, next) {
   const { id } = req.params;
   const userId = req.user.id;
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    const err = new Error('Invalid ID');
-    err.status = 400;
-    return next(err);
-  }
 
   return Tag.findOne({ _id: id, userId })
     .then(tag => tag ? res.json(tag) : next())
@@ -60,12 +53,6 @@ const updateTagById = function(req, res, next) {
 
   if (!(name)) {
     const err = new Error('Missing `name` in request body');
-    err.status = 400;
-    return next(err);
-  }
-
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    const err = new Error('Invalid ID');
     err.status = 400;
     return next(err);
   }
