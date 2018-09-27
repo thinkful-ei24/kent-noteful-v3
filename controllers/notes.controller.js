@@ -17,7 +17,7 @@ const getAllNotes = function(req, res, next) {
 
   if (folderId) filter.folderId = folderId;
   if (tagId) filter.tags = tagId;
-  if (userId) filter.userId = userId;
+  filter.userId = userId;
 
   return Note
     .find(filter)
@@ -42,23 +42,6 @@ const createNewNote = function(req, res, next) {
   const { title, content, folderId, tags = [] } = req.body;
   const userId = req.user.id;
 
-  if (folderId && !mongoose.Types.ObjectId.isValid(folderId)) {
-    const err = new Error('Invalid Folder ID');
-    err.status = 400;
-    return next(err);
-  }
-
-  if (folderId) {
-    Folder.findOne({ _id: folderId, userId })
-      .then(folder => {
-        if (!folder) {
-          const err = new Error('This is not your folder');
-          err.status = 400;
-          return next(err);
-        }
-      });
-  }
-
   if (tags) {
     tags.forEach(tag => {
       if (!mongoose.Types.ObjectId.isValid(tag)) {
@@ -78,13 +61,7 @@ const createNewNote = function(req, res, next) {
     });
   }
 
-  const newNote = {
-    title,
-    content,
-    folderId,
-    tags,
-    userId
-  };
+  const newNote = { title, content, folderId, tags, userId };
 
   if (newNote.folderId === '') {
     delete newNote.folderId;
@@ -114,12 +91,6 @@ const updateNoteById = function(req, res, next) {
       toUpdate[field] = req.body[field];
     }
   });
-
-  if (toUpdate.folderId && !mongoose.Types.ObjectId.isValid(toUpdate.folderId)) {
-    const err = new Error('Invalid Folder ID');
-    err.status = 400;
-    return next(err);
-  }
 
   if (folderId) {
     Folder.findOne({ _id: folderId, userId })
